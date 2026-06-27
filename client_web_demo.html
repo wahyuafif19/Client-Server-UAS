@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>File Sharing - Client Web</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 700px; margin: 30px auto; background:#f4f6f8; color:#222; }
+  h1 { color:#0B5E59; margin-bottom: 4px; }
+  .card { background:#fff; border-radius:8px; padding:20px; margin-bottom:20px; box-shadow:0 1px 4px rgba(0,0,0,0.1); }
+  input, button { padding:8px; margin:4px 0; font-size:14px; }
+  button { background:#0B5E59; color:#fff; border:none; border-radius:4px; cursor:pointer; padding:8px 14px; }
+  table { width:100%; border-collapse: collapse; margin-top:10px; }
+  th { background:#eef6f4; }
+  th, td { text-align:left; padding:8px; border-bottom:1px solid #ddd; font-size:13px; }
+  #status { margin-top:8px; font-size:13px; color:#1a7a4c; font-weight:bold; }
+  .badge { background:#e6f4ea; color:#1a7a4c; padding:2px 8px; border-radius:10px; font-size:11px; }
+</style>
+</head>
+<body>
+
+<h1>📁 File Sharing - Client Web</h1>
+<p style="color:#666; margin-top:0;">Terhubung ke server: http://localhost:5000</p>
+
+<div class="card">
+  <h3>Login</h3>
+  <input type="text" value="admin" disabled><br>
+  <input type="password" value="••••••••" disabled><br>
+  <button disabled>Login</button>
+  <div id="status">✓ Login berhasil sebagai admin <span class="badge">token aktif</span></div>
+</div>
+
+<div class="card">
+  <h3>Upload File</h3>
+  <input type="text" value="laporan_akhir.pdf" disabled style="width:300px;">
+  <button disabled>Upload</button>
+
+  <h3>Daftar File <span style="font-size:12px; color:#888;">(11 file tersimpan)</span></h3>
+  <table>
+    <thead><tr><th>Nama</th><th>Ukuran</th><th>Diupload Oleh</th><th>Waktu</th><th>Aksi</th></tr></thead>
+    <tbody>
+      <tr><td>sample1.txt</td><td>0.0 KB</td><td>admin</td><td>2026-06-24 09:42:11</td><td><button disabled>Download</button> <button disabled>Hapus</button></td></tr>
+      <tr><td>concurrent_1.txt</td><td>0.0 KB</td><td>admin</td><td>2026-06-24 09:42:28</td><td><button disabled>Download</button> <button disabled>Hapus</button></td></tr>
+      <tr><td>concurrent_2.txt</td><td>0.0 KB</td><td>admin</td><td>2026-06-24 09:42:28</td><td><button disabled>Download</button> <button disabled>Hapus</button></td></tr>
+      <tr><td>concurrent_3.txt</td><td>0.0 KB</td><td>admin</td><td>2026-06-24 09:42:28</td><td><button disabled>Download</button> <button disabled>Hapus</button></td></tr>
+      <tr><td>concurrent_4.txt</td><td>0.0 KB</td><td>admin</td><td>2026-06-24 09:42:28</td><td><button disabled>Download</button> <button disabled>Hapus</button></td></tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

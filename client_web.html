@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>File Sharing - Client Web</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; background:#f4f6f8; color:#222; }
+  h1 { color:#0B5E59; }
+  .card { background:#fff; border-radius:8px; padding:20px; margin-bottom:20px; box-shadow:0 1px 4px rgba(0,0,0,0.1); }
+  input, button { padding:8px; margin:4px 0; font-size:14px; }
+  button { background:#0B5E59; color:#fff; border:none; border-radius:4px; cursor:pointer; padding:8px 14px; }
+  button:hover { background:#0d7a73; }
+  table { width:100%; border-collapse: collapse; margin-top:10px; }
+  th, td { text-align:left; padding:8px; border-bottom:1px solid #ddd; font-size:13px; }
+  #status { margin-top:8px; font-size:13px; color:#555; }
+</style>
+</head>
+<body>
+
+<h1>📁 File Sharing - Client Web</h1>
+
+<div class="card" id="login-card">
+  <h3>Login</h3>
+  <input type="text" id="username" placeholder="Username" value="admin"><br>
+  <input type="password" id="password" placeholder="Password" value="admin123"><br>
+  <button onclick="login()">Login</button>
+  <div id="status"></div>
+</div>
+
+<div class="card" id="main-card" style="display:none">
+  <h3>Upload File</h3>
+  <input type="file" id="fileInput">
+  <button onclick="uploadFile()">Upload</button>
+
+  <h3>Daftar File</h3>
+  <button onclick="loadFiles()">Refresh Daftar</button>
+  <table id="fileTable">
+    <thead><tr><th>Nama</th><th>Ukuran</th><th>Diupload Oleh</th><th>Waktu</th><th>Aksi</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+const SERVER_URL = "http://localhost:5000";
+let token = null;
+
+async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const resp = await fetch(`${SERVER_URL}/api/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+  const data = await resp.json();
+  if (resp.ok) {
+    token = data.token;
+    document.getElementById("status").innerText = `Login berhasil sebagai ${data.username}`;
+    document.getElementById("main-card").style.display = "block";
+    loadFiles();
+  } else {
+    document.getElementById("status").innerText = `Gagal: ${data.error}`;
+  }
+}
+
+async function uploadFile() {
+  const fileInput = document.getElementById("fileInput");
+  if (!fileInput.files.length) { alert("Pilih file terlebih dahulu"); return; }
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+
+  const resp = await fetch(`${SERVER_URL}/api/files`, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${token}` },
+    body: formData
+  });
+  const data = await resp.json();
+  if (resp.ok) {
+    alert(`Upload berhasil: ${data.original_name}`);
+    loadFiles();
+  } else {
+    alert(`Gagal: ${data.error}`);
+  }
+}
+
+async function loadFiles() {
+  const resp = await fetch(`${SERVER_URL}/api/files`, {
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+  const data = await resp.json();
+  const tbody = document.querySelector("#fileTable tbody");
+  tbody.innerHTML = "";
+  data.files.forEach(f => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${f.original_name}</td>
+      <td>${(f.size_bytes/1024).toFixed(1)} KB</td>
+      <td>${f.uploaded_by}</td>
+      <td>${f.uploaded_at}</td>
+      <td>
+        <button onclick="downloadFile('${f.file_id}','${f.original_name}')">Download</button>
+        <button onclick="deleteFile('${f.file_id}')">Hapus</button>
+      </td>`;
+    tbody.appendChild(row);
+  });
+}
+
+async function downloadFile(fileId, filename) {
+  const resp = await fetch(`${SERVER_URL}/api/files/${fileId}`, {
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+  const blob = await resp.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+async function deleteFile(fileId) {
+  if (!confirm("Hapus file ini?")) return;
+  const resp = await fetch(`${SERVER_URL}/api/files/${fileId}`, {
+    method: "DELETE",
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+  const data = await resp.json();
+  alert(data.message || data.error);
+  loadFiles();
+}
+</script>
+
+</body>
+</html>

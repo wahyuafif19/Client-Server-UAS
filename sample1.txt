@@ -1,0 +1,3 @@
+Ini adalah file teks contoh untuk pengujian upload pada aplikasi File Sharing.
+Dibuat untuk Tugas Akhir Client Server Programming (INF2.62.6003).
+Universitas Negeri Padang.
